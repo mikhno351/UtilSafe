@@ -1,0 +1,13 @@
+composer.phar
+composer.lock
+phpunit.xml.dist export-ignore
+
+.phpunit.result.cache
+.gitattributes export-ignore
+.gitignore export-ignore
+
+/vendor
+/tests export-ignore
+
+/.idea
+/.github export-ignore
