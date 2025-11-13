@@ -34,7 +34,7 @@ $value = Safe::get('  John  ', 'Unknown', fn($v) => trim($v));
 echo $value; // John
 
 // Transform string function
-$value = Safe::get('   John   ', null, 'trim');
+$value = Safe::get('   John   ', 'Unknown', 'trim');
 echo $value; // John
 
 // Default value ignores transform
