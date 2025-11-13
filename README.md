@@ -33,6 +33,10 @@ echo $value; // 123
 $value = Safe::get('  John  ', 'Unknown', fn($v) => trim($v));
 echo $value; // John
 
+// Transform string function
+$value = Safe::get('   John   ', null, 'trim');
+echo $value; // John
+
 // Default value ignores transform
 $value = Safe::get(null, 'Fallback', fn($v) => strtoupper($v));
 echo $value; // Fallback
