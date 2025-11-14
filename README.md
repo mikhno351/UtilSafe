@@ -84,6 +84,8 @@ var_dump(Truth::of('no')); // false
 var_dump(Truth::of(null)); // false
 
 // Strict mode
+//
+// In strict mode, any truthy list is ignored (both global and per-call custom lists). The ONLY values considered true are: 1, '1', true, 'true'
 var_dump(Truth::of('true', true)); // true
 var_dump(Truth::of('on', true)); // false
 var_dump(Truth::of(1, true)); // true
