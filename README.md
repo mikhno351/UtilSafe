@@ -63,9 +63,6 @@ $value = Safe::get($data['unknown'] ?? null, 'Default');
 echo $value; // Default
 
 // An example of a complex structure for extracting all or a specific element from a database
-/**
- * @var Device[] $data
- */
 $data = Safe::get(@$args['id'], $this->deviceService->getDevices()->getData(), fn($id) => [$this->deviceService->getDevice($id)], Safe::CAST_ARRAY);
 ```
 
