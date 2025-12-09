@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace KetPHP\Utils;
 
 use KetPHP\Utils\Common\Cast;
-use Throwable;
 
 /**
  * Utility class for safely converting various values to boolean.
@@ -42,13 +41,20 @@ final class Truth
      * You can pass any types — not just strings.
      *
      * @param array<int, mixed>|null $truthy Custom list of truthy values.
+     * @param bool $merge Whether to merge with existing truthy values instead of replacing them.
      *
      * @return void
      */
-    public static function configure(?array $truthy = null): void
+    public static function configure(?array $truthy = null, bool $merge = false): void
     {
-        if (is_array($truthy) === true) {
-            self::$truthyValues = array_values(array_filter($truthy, static fn($value) => is_null($value) === false));
+        if (is_array($truthy) === true && count($truthy) >= 1) {
+            $filteredValues = array_values(array_filter($truthy, static fn($value) => is_null($value) === false));
+
+            if ($merge === true && empty(self::$truthyValues) === false) {
+                self::$truthyValues = array_values(array_unique(array_merge(self::$truthyValues, $filteredValues)));
+            } else {
+                self::$truthyValues = $filteredValues;
+            }
         }
     }
 
