@@ -29,11 +29,18 @@ final class Truth
 {
 
     /**
+     * Global list of truthy values for non-strict comparison.
+     *
+     * @var array<int, mixed>
+     */
+    private static array $globalTruthyValues = [1, true, '1', 'true', 'on', 'yes', 'y', '+'];
+
+    /**
      * Default list of truthy values for non-strict comparison.
      *
      * @var array<int, mixed>
      */
-    private static array $truthyValues = [1, true, '1', 'true', 'on', 'yes', 'y', '+'];
+    private static array $defaultTruthyValues = [1, true, '1', 'true', 'on', 'yes', 'y', '+'];
 
     /**
      * Updates the global list of truthy values.
@@ -50,10 +57,10 @@ final class Truth
         if (is_array($truthy) === true && count($truthy) >= 1) {
             $filteredValues = array_values(array_filter($truthy, static fn($value) => is_null($value) === false));
 
-            if ($merge === true && empty(self::$truthyValues) === false) {
-                self::$truthyValues = array_values(array_unique(array_merge(self::$truthyValues, $filteredValues)));
+            if ($merge === true && empty(self::$globalTruthyValues) === false) {
+                self::$globalTruthyValues = array_values(array_unique(array_merge(self::$globalTruthyValues, $filteredValues)));
             } else {
-                self::$truthyValues = $filteredValues;
+                self::$globalTruthyValues = $filteredValues;
             }
         }
     }
@@ -96,7 +103,7 @@ final class Truth
             return false;
         }
 
-        $list = is_array($customTruthies) === true ? $customTruthies : self::$truthyValues;
+        $list = is_array($customTruthies) === true ? $customTruthies : self::$globalTruthyValues;
 
         if (is_string($value) === true) {
             $normalized = mb_strtolower(trim($value));
@@ -113,5 +120,10 @@ final class Truth
         }
 
         return false;
+    }
+
+    public static function useDefaultConfigure(): void
+    {
+        self::$globalTruthyValues = self::$defaultTruthyValues;
     }
 }

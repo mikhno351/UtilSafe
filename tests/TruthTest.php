@@ -8,6 +8,12 @@ use PHPUnit\Framework\TestCase;
 final class TruthTest extends TestCase
 {
 
+    protected function setUp(): void
+    {
+        Truth::useDefaultConfigure();
+        parent::setUp();
+    }
+
     public function testStrictMode(): void
     {
         $this->assertTrue(Truth::of(true, true));
@@ -55,7 +61,16 @@ final class TruthTest extends TestCase
 
         $this->assertTrue(Truth::of('yes'));
         $this->assertTrue(Truth::of('sure'));
-        $this->assertFalse(Truth::of('on'));
+        $this->assertFalse(Truth::of('on')); // is default value
+    }
+
+    public function testConfigureGlobalTruthyValuesWithDefaultTruthyValues(): void
+    {
+        Truth::configure(['yes', 'sure'], true);
+
+        $this->assertTrue(Truth::of('yes'));
+        $this->assertTrue(Truth::of('sure'));
+        $this->assertTrue(Truth::of('on')); // is default value
     }
 
     public function testHandlesUnexpectedTypesSafely(): void
