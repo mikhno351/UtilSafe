@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KetPHP\Utils;
 
+use KetPHP\Utils\Common\Cast;
 use Throwable;
 
 /**
@@ -14,10 +15,10 @@ use Throwable;
  *
  * Example:
  * ```
- * $data = ['key' => 'value'];
+ * $data = ['known' => 'value'];
  *
- * $result = Safe::get($data['key'], 'default', fn($v) => trim($v), Safe::CAST_STRING); // value
- * $result2 = Safe::get($data['key2'], 'default', fn($v) => trim($v), Safe::CAST_STRING); // default
+ * echo Safe::get(@$data['known'], 'default', fn($v) => trim($v), Cast::STRING); // value
+ * echo Safe::get(@$data['unknown'], 'default', 'trim', Cast::STRING); // default
  * ```
  *
  * @package KetPHP\Utils
@@ -25,22 +26,46 @@ use Throwable;
 final class Safe
 {
 
-    /** @var string Cast to integer */
+    /**
+     * @deprecated
+     *
+     * @var string Cast to integer
+     */
     public const CAST_INT = 'int';
 
-    /** @var string Cast to float */
+    /**
+     * @deprecated
+     *
+     * @var string Cast to float
+     */
     public const CAST_FLOAT = 'float';
 
-    /** @var string Cast to string */
+    /**
+     * @deprecated
+     *
+     * @var string Cast to string
+     */
     public const CAST_STRING = 'string';
 
-    /** @var string Cast to boolean */
+    /**
+     * @deprecated
+     *
+     * @var string Cast to boolean
+     */
     public const CAST_BOOL = 'bool';
 
-    /** @var string Cast to array */
+    /**
+     * @deprecated
+     *
+     * @var string Cast to array
+     */
     public const CAST_ARRAY = 'array';
 
-    /** @var string Cast to object */
+    /**
+     * @deprecated
+     *
+     * @var string Cast to object
+     */
     public const CAST_OBJECT = 'object';
 
     /**
@@ -54,16 +79,11 @@ final class Safe
      * @param mixed $value The primary value or callable to retrieve.
      * @param mixed $default The default fallback value or callable if $value is null or fails.
      * @param callable|null $transform A transformation callback applied only if $value was successful.
-     * @param string|null $cast Optional type casting (Safe::CAST_* constants).
+     * @param Cast|null|string $cast Optional type casting (Cast::* constants).
      *
      * @return mixed The safe, processed and optionally cast value.
      */
-    public static function get(
-        mixed     $value,
-        mixed     $default = null,
-        ?callable $transform = null,
-        ?string   $cast = null
-    ): mixed
+    public static function get(mixed $value, mixed $default = null, ?callable $transform = null, Cast|null|string $cast = null): mixed
     {
         $result = null;
         $usedDefault = false;
@@ -74,7 +94,7 @@ final class Safe
             $usedDefault = true;
         }
 
-        if ($result === null || $usedDefault) {
+        if (is_null($result) === true || $usedDefault) {
             try {
                 $result = is_callable($default) === true ? $default() : $default;
             } catch (Throwable) {
@@ -83,14 +103,18 @@ final class Safe
             $usedDefault = true;
         }
 
-        if ($usedDefault === false && $transform !== null) {
+        if ($usedDefault === false && is_callable($transform) === true) {
             try {
                 $result = $transform($result);
             } catch (Throwable) {
             }
         }
 
-        if ($cast !== null) {
+        if ($cast instanceof Cast) {
+            $cast = $cast->value;
+        }
+
+        if (is_null($cast) === false) {
             $result = self::cast($result, $cast);
         }
 
@@ -101,7 +125,7 @@ final class Safe
      * Safely casts a value to the given type.
      *
      * @param mixed $value The value to cast.
-     * @param string $type One of the Safe::CAST_* constants.
+     * @param string $type One of the Cast::* constants.
      *
      * @return mixed The casted value or the original one if type is unknown.
      */
@@ -109,12 +133,12 @@ final class Safe
     {
         try {
             return match ($type) {
-                self::CAST_INT => (int)$value,
-                self::CAST_FLOAT => (float)$value,
-                self::CAST_STRING => (string)$value,
-                self::CAST_BOOL => (bool)$value,
-                self::CAST_ARRAY => (array)$value,
-                self::CAST_OBJECT => (object)$value,
+                Cast::INT->value => (int)$value,
+                Cast::FLOAT->value => (float)$value,
+                Cast::STRING->value => (string)$value,
+                Cast::BOOLEAN->value => (bool)$value,
+                Cast::ARRAY->value => (array)$value,
+                Cast::OBJECT->value => (object)$value,
                 default => $value,
             };
         } catch (Throwable) {

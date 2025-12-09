@@ -29,12 +29,12 @@ final class TruthTest extends TestCase
         $this->assertTrue(Truth::of('true'));
         $this->assertTrue(Truth::of('on'));
         $this->assertTrue(Truth::of('yes'));
-        $this->assertTrue(Truth::of('active'));
 
         $this->assertFalse(Truth::of(false));
         $this->assertFalse(Truth::of(0));
         $this->assertFalse(Truth::of('0'));
         $this->assertFalse(Truth::of('no'));
+        $this->assertFalse(Truth::of('active'));
         $this->assertFalse(Truth::of(null));
     }
 

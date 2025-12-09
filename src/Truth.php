@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KetPHP\Utils;
 
+use KetPHP\Utils\Common\Cast;
 use Throwable;
 
 /**
@@ -17,11 +18,10 @@ use Throwable;
  *
  * Example:
  *  ```
- *  $data = ['key1' => 1, 'key2' => 'on', 'key3' => 'off'];
- *
- *  $result = Truth::of($data['key1']); // true
- *  $result = Truth::of($data['key2']); // true
- *  $result = Truth::of($data['key3']); // false
+ *  var_dump(Truth::of(1)); // true
+ *  var_dump(Truth::of('on')); // true
+ *  var_dump(Truth::of('off')); // false
+ *  var_dump(Truth::of('another')); // false
  *  ```
  *
  * @package KetPHP\Utils
@@ -34,9 +34,7 @@ final class Truth
      *
      * @var array<int, mixed>
      */
-    private static array $truthyValues = [
-        1, true, '1', 'true', 'on', 'yes', 'y', 'ok', '+', 'active', 'enable', 'enabled'
-    ];
+    private static array $truthyValues = [1, true, '1', 'true', 'on', 'yes', 'y', '+'];
 
     /**
      * Updates the global list of truthy values.
@@ -49,8 +47,8 @@ final class Truth
      */
     public static function configure(?array $truthy = null): void
     {
-        if (is_array($truthy)) {
-            self::$truthyValues = array_values(array_filter($truthy, static fn($v) => $v !== null));
+        if (is_array($truthy) === true) {
+            self::$truthyValues = array_values(array_filter($truthy, static fn($value) => is_null($value) === false));
         }
     }
 
@@ -65,7 +63,7 @@ final class Truth
      */
     public static function of(mixed $value, bool $strict = false, ?array $customTruthies = null): bool
     {
-        return Safe::get($value, false, fn($v) => self::convert($v, $strict, $customTruthies), Safe::CAST_BOOL);
+        return Safe::get($value, false, fn($value) => self::convert($value, $strict, $customTruthies) === true, Cast::BOOLEAN);
     }
 
     /**
@@ -92,7 +90,8 @@ final class Truth
             return false;
         }
 
-        $list = $customTruthies ?? self::$truthyValues;
+        $list = is_array($customTruthies) === true ? $customTruthies : self::$truthyValues;
+
         if (is_string($value) === true) {
             $normalized = mb_strtolower(trim($value));
             foreach ($list as $truthy) {

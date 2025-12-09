@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use KetPHP\Utils\Common\Cast;
 use KetPHP\Utils\Safe;
 use PHPUnit\Framework\TestCase;
 
@@ -66,12 +67,12 @@ final class SafeTest extends TestCase
 
     public function testCastsValuesProperly(): void
     {
-        $this->assertSame(123, Safe::get('123', null, null, Safe::CAST_INT));
-        $this->assertSame(123.0, Safe::get('123', null, null, Safe::CAST_FLOAT));
-        $this->assertSame('1', Safe::get(true, null, null, Safe::CAST_STRING));
-        $this->assertSame(true, Safe::get(1, null, null, Safe::CAST_BOOL));
-        $this->assertSame(['x' => 1], Safe::get(['x' => 1], null, null, Safe::CAST_ARRAY));
-        $this->assertIsObject(Safe::get(['x' => 1], null, null, Safe::CAST_OBJECT));
+        $this->assertSame(123, Safe::get('123', null, null, Cast::INT));
+        $this->assertSame(123.0, Safe::get('123', null, null, Cast::FLOAT));
+        $this->assertSame('1', Safe::get(true, null, null, Cast::STRING));
+        $this->assertSame(true, Safe::get(1, null, null, Cast::BOOLEAN));
+        $this->assertSame(['x' => 1], Safe::get(['x' => 1], null, null, Cast::ARRAY));
+        $this->assertIsObject(Safe::get(['x' => 1], null, null, Cast::OBJECT));
     }
 
     public function testInvalidCastDoesNotThrow(): void
@@ -108,8 +109,7 @@ final class SafeTest extends TestCase
 
         $data = ['known' => 'value'];
 
-        $result = Safe::get(@$data['unknown'], 'default-value');
-        $this->assertSame('default-value', $result);
-        $this->assertSame('default-fallback', Safe::get(@$undefinedVar, 'default-fallback'));
+        $this->assertSame('default-value', Safe::get(@$data['unknown'], 'default-value'));
+        $this->assertSame('value', Safe::get(@$data['known'], 'default-value'));
     }
 }
