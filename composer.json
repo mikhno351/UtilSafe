@@ -37,9 +37,9 @@
     "ext-mbstring": "Recommended for multibyte string safety"
   },
   "prefer-stable": true,
-  "homepage": "https://github.com/mikhno351/UtilSafe",
+  "homepage": "https://github.com/mikhno351/KetPHP-Safe",
   "support": {
-    "issues": "https://github.com/mikhno351/UtilSafe/issues",
-    "source": "https://github.com/mikhno351/UtilSafe"
+    "issues": "https://github.com/mikhno351/KetPHP-Safe/issues",
+    "source": "https://github.com/mikhno351/KetPHP-Safe"
   }
 }
